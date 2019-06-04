@@ -12,6 +12,7 @@ def SendInfo(Information):
     PORT=3000
     print("This is your petition : ")
     print(Information)
+    #Crea el socket
 
 
 
