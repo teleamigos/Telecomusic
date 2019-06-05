@@ -6,7 +6,7 @@ import socket
 """---------------------------------------------------------------------
 --------------------------SendInfo-----------------------------------"""
 
-def SendInfo(Information):
+def SendInfo(InfoToSend):
     #Realiza la conexion con el servidor para enviar informacion.
     IP='127.0.0.1'
     PORT=3000
