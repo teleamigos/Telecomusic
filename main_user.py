@@ -21,10 +21,6 @@ def SendInfo(Information):
 
 
 
-
-
-
-
 """---------------------------------------------------------------------
 --------------------------DownloadButton-----------------------------"""
 
@@ -54,4 +50,4 @@ root.mainloop()
 
 """Se cierra la ventana y continua con la conexion"""
 
-print("Ya se mando")
+print("your petition is being processed ....")
