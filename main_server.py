@@ -16,7 +16,7 @@ def findFile(lista,nombre):
 --------------------------main-------------------------------------"""
 """List of songs"""
 
-lista = ['LaFemme',
+lista = ['LaFemme.wav',
         'PinkFloyd',
         'ACDC',
         'LedZeppelin',
@@ -28,6 +28,7 @@ lista = ['LaFemme',
 """Server"""
 IP='127.0.0.1'
 PORT=3000
+escritor=wave.open("tobesent.wav","wb")#Archivo que contiene info sobre la cancion elegida.
 
 with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
     s.bind((IP,PORT))
@@ -47,6 +48,7 @@ if isInList == 1:
     print('Se envia la cancion al cliente')
     if nombre == 'Soko':
         print('funcion para elegir Soko.wav')
+        #Nombre_archivo="nombredelarchivo.wav"
     if nombre == 'LaFemme':
         print('funcion para elegir LaFemme.wav')
     if nombre == 'PinkFloyd':
@@ -61,13 +63,26 @@ if isInList == 1:
         print('funcion para elegir TheRollingStones.wav')
     if nombre == 'Queen':
         print('funcion para elegir Queen.wav')
+    """Envia confirmacion"""
+    #s.sendall(isInList)
+    """Opening a audio file"""
+    audioToSend=wave.open(Nombre_archivo,'rb')
+    audioPackage=audioToSend.readframes(64)
+    escritor.setparams(audioToSend.getparams())#Configuramos una variable que se ajuste a la cancion que vamos a enviar.
+    """Enviar contenedor de archivo"""
+    s.sendall(escritor.encode())
+    """Enviando archivo por cada Frame"""
+    while len(audioPackage)==256:
+        s.sendall(audioPackage)
+        audioPackage=audioToSend.readframes(64)
+    print("All frames were sent")
+
 else:
     print('Se devuelve mensaje de error al cliente')
-"""---------------------------------------------------------------------
---------------------------Opening a audio file-----------------------"""
+    #Envia error
 
-audioToSend=wave.open('Orlando Glez-.wav','rb')
-audioPackage=audioToSend.readframes(16)
+
+
 
 
 """---------------------------------------------------------------------
