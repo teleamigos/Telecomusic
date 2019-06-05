@@ -10,9 +10,18 @@ def SendInfo(Information):
     #Realiza la conexion con el servidor para enviar informacion.
     IP='127.0.0.1'
     PORT=3000
+
     print("This is your petition : ")
-    print(Information)
-    #Crea el socket
+    print(InfoToSend)
+
+    #Descriptor del socket
+    with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
+        s.connect((IP,PORT))
+        s.sendall(InfoToSend.encode())
+
+
+
+
 
 
 
@@ -29,6 +38,9 @@ def DownloadButton():
 
 """--------------------------------------------------------------------
 --------------------------Ventana principal-------------------------"""
+
+
+
 root=Tk()
 root.title("Telecomusic")
 root.configure(background="pale goldenrod")
