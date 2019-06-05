@@ -24,6 +24,7 @@ with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
             if not data:
                 break
 
+
 """---------------------------------------------------------------------
 --------------------------Searching the song-------------------------"""
 
@@ -31,6 +32,11 @@ with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
 --------------------------Opening a audio file-----------------------"""
 
 audioToSend=wave.open('Orlando Glez-.wav','rb')
+audioPackage=audioToSend.readframes(16)
+
 
 """---------------------------------------------------------------------
 --------------------------Sending your song--------------------------"""
+
+
+s.sendall(audioPackage)
