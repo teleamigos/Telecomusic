@@ -32,19 +32,33 @@ def SendInfo(InfoToSend):
         inforfromserver=sock.recv(64)
         samplew=int.from_bytes(inforfromserver,'big',signed=True)
         inforfromserver=sock.recv(64)
-        fs=int(inforfromserver)
+        fs=int(inforfromserver.decode('utf-8'))
+        inforfromserver=sock.recv(128)
+        nframes=int(inforfromserver.decode('utf-8'))
         inforfromserver=sock.recv(64)
-        nframes=int.from_bytes(inforfromserver,'big',signed=True)
+        compress_type=inforfromserver.decode('utf-8')
         inforfromserver=sock.recv(64)
-        compress_type=int.from_bytes(inforfromserver,'big',signed=True)
-        inforfromserver=sock.recv(64)
-        comp=int.from_bytes(inforfromserver,'big',signed=True)
+        comp=inforfromserver.decode('utf-8')
         print(nCH)
         print(samplew)
         print(fs)
         print(nframes)
         print(compress_type)
         print(comp)
+        AudioReceived.setnchannels(nCH)
+        AudioReceived.setsampwidth(samplew)
+        AudioReceived.setframerate(fs)
+        AudioReceived.setnframes(nframes)
+        AudioReceived.setcomptype(compress_type,comp)
+        FrameReceived=sock.recv(64)
+        while len(FrameReceived)>=0:
+
+            AudioReceived.writeframes(FrameReceived)
+            FrameReceived=sock.recv(64)
+            print(FrameReceived)
+        print("It's ok")
+        AudioReceived.close()
+        sock.close()
     else:
         print("This song is not available")
 
@@ -57,7 +71,7 @@ def DownloadButton():
     ## que se quiere
     txt=entry.get()
     SendInfo(txt)
-    root.destroy()
+    #root.destroy()
 
 
 """--------------------------------------------------------------------

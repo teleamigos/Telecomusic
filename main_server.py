@@ -31,7 +31,6 @@ lista = ['LaFemme.wav',
 """Server"""
 IP='127.0.0.1'
 PORT=3000
-escritor=wave.open("tobesent.wav","wb")#Archivo que contiene info sobre la cancion elegida.
 
 sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)#Descriptor
 sock.bind((IP,PORT))
@@ -60,24 +59,37 @@ while True:
             """Opening the wav file"""
             file_name=nombre+'.wav'
             audioToSend=wave.open(file_name,'rb')
-            print("abierto ok")
+            print("--------------------------")
             nCH=audioToSend.getnchannels()
             time.sleep(1)
             connection.sendall(bytes([nCH]))
             samplew=audioToSend.getsampwidth()
+            time.sleep(1)
             connection.sendall(bytes([samplew]))
             fs=audioToSend.getframerate()
             fs_str=str(fs)
+            time.sleep(1)
             connection.sendall(bytes(fs_str,'utf-8'))
             nframes=audioToSend.getnframes()
-            connection.sendall(bytes([nf]))
+            nframes_str=str(nframes)
+            connection.sendall(bytes(nframes_str,'utf-8'))
             compress_type=audioToSend.getcomptype()
-            connection.sendall(bytes([compress_type]))
+            time.sleep(1)
+            connection.sendall(bytes(compress_type,'utf-8'))
             comp=audioToSend.getcompname()
-            connection.sendall(bytes([comp]))
+            time.sleep(1)
+            connection.sendall(bytes(comp,'utf-8'))
             print(nCH)
             print(samplew)
             print(fs)
             print(nframes)
             print(compress_type)
             print(comp)
+            actualFrame=audioToSend.readframes(64)
+            time.sleep(2)
+            while len(actualFrame)>=0:
+                connection.sendall(actualFrame)
+                actualFrame=audioToSend.readframes(64)
+            print("All frames were sent")
+            audioToSend.close()
+            connection.close()
