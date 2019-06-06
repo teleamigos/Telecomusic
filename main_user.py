@@ -61,6 +61,8 @@ def SendInfo(InfoToSend):
         sock.close()
     else:
         print("This song is not available")
+        AudioReceived.close()
+        sock.close()
 
 
 """---------------------------------------------------------------------
