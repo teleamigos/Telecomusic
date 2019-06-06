@@ -1,5 +1,6 @@
 import socket
 import wave
+import time
 
 
 
@@ -8,9 +9,10 @@ import wave
 --------------------------findFile-------------------------------------"""
 def findFile(lista,nombre):
     if nombre in lista:
-        return 1
+        index = lista.index(nombre)
+        return index
     else:
-        return 0
+        return 14
 
 """---------------------------------------------------------------------
 --------------------------main-------------------------------------"""
@@ -23,70 +25,59 @@ lista = ['LaFemme.wav',
         'TheDoors',
         'TheRollingStones',
         'Queen',
-        'Soko']
+        'Soko',
+        'Orlando Glez-']
 
 """Server"""
 IP='127.0.0.1'
 PORT=3000
 escritor=wave.open("tobesent.wav","wb")#Archivo que contiene info sobre la cancion elegida.
 
-with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
-    s.bind((IP,PORT))
-    s.listen()
-    conn,addr=s.accept()
-    with conn:
-        print("Conected with ",addr)
-        while True:
-            data=conn.recv(1024)
-            #print(data)
-            if not data:
-                break
-"""Searching the song"""
-isInList=findFile(lista,data)
-
-if isInList == 1:
-    print('Se envia la cancion al cliente')
-    if nombre == 'Soko':
-        print('funcion para elegir Soko.wav')
-        #Nombre_archivo="nombredelarchivo.wav"
-    if nombre == 'LaFemme':
-        print('funcion para elegir LaFemme.wav')
-    if nombre == 'PinkFloyd':
-        print('funcion para elegir PinkFloyd.wav')
-    if nombre == 'ACDC':
-        print('funcion para elegir ACDC.wav')
-    if nombre == 'LedZeppelin':
-        print('funcion para elegir LedZeppelin.wav')
-    if nombre == 'TheDoors':
-        print('funcion para elegir TheDoors.wav')
-    if nombre == 'TheRollingStones':
-        print('funcion para elegir TheRollingStones.wav')
-    if nombre == 'Queen':
-        print('funcion para elegir Queen.wav')
-    """Envia confirmacion"""
-    #s.sendall(isInList)
-    """Opening a audio file"""
-    audioToSend=wave.open(Nombre_archivo,'rb')
-    audioPackage=audioToSend.readframes(64)
-    escritor.setparams(audioToSend.getparams())#Configuramos una variable que se ajuste a la cancion que vamos a enviar.
-    """Enviar contenedor de archivo"""
-    s.sendall(escritor.encode())
-    """Enviando archivo por cada Frame"""
-    while len(audioPackage)==256:
-        s.sendall(audioPackage)
-        audioPackage=audioToSend.readframes(64)
-    print("All frames were sent")
-
-else:
-    print('Se devuelve mensaje de error al cliente')
-    #Envia error
-
-
-
-
-
-"""---------------------------------------------------------------------
---------------------------Sending your song--------------------------"""
-
-
-s.sendall(audioPackage)
+sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)#Descriptor
+sock.bind((IP,PORT))
+sock.listen(1)
+while True:
+    print("waiting...")
+    connection,client_address=sock.accept()
+    while True:
+        print("Connecting...")
+        data=connection.recv(1024)
+        if not data:
+            break
+        nombre=data.decode('utf-8')
+        print("your petition : ",nombre)
+        """Searching the song"""
+        InList=findFile(lista,nombre)
+        if InList==14:
+            print("your petition is not in our list")
+            time.sleep(2)
+            connection.sendall('0'.encode('utf-8'))
+            connection.close()
+        else:
+            print("Index in list: ",InList)
+            time.sleep(2)
+            connection.sendall('1'.encode('utf-8'))
+            """Opening the wav file"""
+            file_name=nombre+'.wav'
+            audioToSend=wave.open(file_name,'rb')
+            print("abierto ok")
+            nCH=audioToSend.getnchannels()
+            time.sleep(1)
+            connection.sendall(bytes([nCH]))
+            samplew=audioToSend.getsampwidth()
+            connection.sendall(bytes([samplew]))
+            fs=audioToSend.getframerate()
+            fs_str=str(fs)
+            connection.sendall(bytes(fs_str,'utf-8'))
+            nframes=audioToSend.getnframes()
+            connection.sendall(bytes([nf]))
+            compress_type=audioToSend.getcomptype()
+            connection.sendall(bytes([compress_type]))
+            comp=audioToSend.getcompname()
+            connection.sendall(bytes([comp]))
+            print(nCH)
+            print(samplew)
+            print(fs)
+            print(nframes)
+            print(compress_type)
+            print(comp)
